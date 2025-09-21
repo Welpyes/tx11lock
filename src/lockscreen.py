@@ -12,7 +12,8 @@ from typing import Dict, Any
 from widget_manager import WidgetManager
 
 class LockScreen:
-    def __init__(self, config_file: str = None):
+    def __init__(self, config_file: str = None, debug: bool = False):
+        self.debug = debug
         self.temp_dir = tempfile.mkdtemp()
         self.screenshot_path = os.path.join(self.temp_dir, "screenshot.png")
         self.blurred_path = os.path.join(self.temp_dir, "blurred.png")
@@ -54,11 +55,11 @@ class LockScreen:
         return default_config
     
     def setup_css(self):
-        """Setup CSS styling"""
+        """Setup CSS styling from SCSS"""
         css_provider = Gtk.CssProvider()
         
-        # Default CSS
-        default_css = """
+        # Default SCSS
+        default_scss = """
 .clock-widget {
     font-size: 48px;
     font-weight: bold;
@@ -66,18 +67,41 @@ class LockScreen:
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
     font-family: Sans;
 }
+
+.weather-widget {
+    font-family: Sans;
+    font-size: 18px;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
 """
         
-        # Try to load custom CSS file
-        css_file = "lockscreen.css"
-        if os.path.exists(css_file):
+        # Try to load and compile SCSS file
+        scss_file = "lockscreen.scss"
+        css_content = default_scss
+        
+        if os.path.exists(scss_file):
             try:
-                css_provider.load_from_path(css_file)
+                css_content = self.compile_scss(scss_file)
             except Exception as e:
-                print(f"Error loading CSS file: {e}")
-                css_provider.load_from_data(default_css.encode())
+                print(f"Error compiling SCSS file: {e}")
+                css_content = default_scss
         else:
-            css_provider.load_from_data(default_css.encode())
+            # Check for legacy CSS file
+            css_file = "lockscreen.css"
+            if os.path.exists(css_file):
+                try:
+                    with open(css_file, 'r') as f:
+                        css_content = f.read()
+                except Exception as e:
+                    print(f"Error loading CSS file: {e}")
+                    css_content = default_scss
+        
+        try:
+            css_provider.load_from_data(css_content.encode())
+        except Exception as e:
+            print(f"Error loading compiled CSS: {e}")
+            css_provider.load_from_data(default_scss.encode())
         
         # Apply CSS to the screen
         display = Gdk.Display.get_default()
@@ -88,6 +112,22 @@ class LockScreen:
             css_provider, 
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
+    
+    def compile_scss(self, scss_file: str) -> str:
+        """Compile SCSS to CSS"""
+        try:
+            import sass
+            with open(scss_file, 'r') as f:
+                scss_content = f.read()
+            return sass.compile(string=scss_content)
+        except ImportError:
+            print("Warning: libsass not installed. Install with: pip install libsass")
+            print("Falling back to treating SCSS as CSS...")
+            # Fallback: treat as CSS
+            with open(scss_file, 'r') as f:
+                return f.read()
+        except Exception as e:
+            raise Exception(f"SCSS compilation failed: {e}")
     
     def capture_and_blur(self):
         """Take screenshot with scrot and blur with ffmpeg"""
@@ -141,7 +181,7 @@ class LockScreen:
         
         # Setup CSS and widgets
         self.setup_css()
-        self.widget_manager = WidgetManager(self.overlay)
+        self.widget_manager = WidgetManager(self.overlay, debug=self.debug)
         self.widget_manager.load_widgets(self.config)
         
         # Window focus and display

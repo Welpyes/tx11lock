@@ -5,24 +5,55 @@ from datetime import datetime
 from typing import Dict, Any
 import subprocess
 import json
+import re
 
 class BuiltinWidgets:
     """Container for builtin widget classes"""
     
     class Clock:
-        def __init__(self, config: Dict[str, Any], css_class: str):
+        def __init__(self, config: Dict[str, Any], css_class: str, debug: bool = False):
             self.config = config
             self.css_class = css_class
+            self.debug = debug
             self.label_format = config.get('options', {}).get('label', '%I:%M %p')
+            
+            # Create container with background support
+            self.event_box, self.inner_box = self.create_widget_container(css_class)
             
             # Create GTK label
             self.widget = Gtk.Label()
-            self.widget.get_style_context().add_class(css_class)
+            self.widget.get_style_context().add_class(f"{css_class}-text")
+            
+            # Add label to inner container (for proper padding)
+            self.inner_box.pack_start(self.widget, True, True, 0)
             
             # Update immediately and start timer
             self.update_time()
             # Update every second
             GLib.timeout_add_seconds(1, self.update_time)
+        
+        def debug_print(self, message: str):
+            """Print debug message only if debug mode is enabled"""
+            if self.debug:
+                print(f"Debug - Clock: {message}")
+        
+        def create_widget_container(self, css_class: str):
+            """Create a container with background styling support"""
+            # Create event box for background
+            event_box = Gtk.EventBox()
+            event_box.get_style_context().add_class(f"{css_class}-background")
+            
+            # Create inner box for padding - this is what handles spacing
+            inner_box = Gtk.Box()
+            inner_box.set_orientation(Gtk.Orientation.HORIZONTAL)
+            inner_box.set_halign(Gtk.Align.CENTER)
+            inner_box.set_valign(Gtk.Align.CENTER)
+            inner_box.get_style_context().add_class(f"{css_class}-padding")
+            
+            event_box.add(inner_box)
+            
+            self.debug_print(f"Created container for {css_class}")
+            return event_box, inner_box
         
         def update_time(self):
             """Update the time display"""
@@ -31,12 +62,13 @@ class BuiltinWidgets:
             return True  # Continue the timer
         
         def get_widget(self):
-            return self.widget
+            return self.event_box
     
     class Custom:
-        def __init__(self, config: Dict[str, Any], css_class: str):
+        def __init__(self, config: Dict[str, Any], css_class: str, debug: bool = False):
             self.config = config
             self.css_class = css_class
+            self.debug = debug
             
             # Get configuration
             options = config.get('options', {})
@@ -44,12 +76,19 @@ class BuiltinWidgets:
             
             self.label_format = options.get('label', '')
             self.run_cmd = exec_options.get('run_cmd', '')
-            self.run_interval = exec_options.get('run_interval', 300000)  # 5 min default
+            self.run_interval = exec_options.get('run_interval', exec_options.get('interval', 300000))
             self.return_format = exec_options.get('return_format', 'text')
+            
+            self.debug_print(f"Creating container for {css_class}")
+            # Create container with background support
+            self.event_box, self.inner_box = self.create_widget_container(css_class)
             
             # Create GTK label
             self.widget = Gtk.Label()
-            self.widget.get_style_context().add_class(css_class)
+            self.widget.get_style_context().add_class(f"{css_class}-text")
+            
+            # Add label to inner container (for proper padding)
+            self.inner_box.pack_start(self.widget, True, True, 0)
             
             # Data storage
             self.last_data = {}
@@ -59,6 +98,31 @@ class BuiltinWidgets:
             # Convert milliseconds to seconds for GLib
             interval_seconds = max(1, self.run_interval // 1000)
             GLib.timeout_add_seconds(interval_seconds, self.update_data)
+            
+            self.debug_print(f"Custom widget initialization complete")
+        
+        def debug_print(self, message: str):
+            """Print debug message only if debug mode is enabled"""
+            if self.debug:
+                print(f"Debug - Custom: {message}")
+        
+        def create_widget_container(self, css_class: str):
+            """Create a container with background styling support"""
+            # Create event box for background
+            event_box = Gtk.EventBox()
+            event_box.get_style_context().add_class(f"{css_class}-background")
+            
+            # Create inner box for padding - this is what handles spacing
+            inner_box = Gtk.Box()
+            inner_box.set_orientation(Gtk.Orientation.HORIZONTAL)
+            inner_box.set_halign(Gtk.Align.CENTER)
+            inner_box.set_valign(Gtk.Align.CENTER)
+            inner_box.get_style_context().add_class(f"{css_class}-padding")
+            
+            event_box.add(inner_box)
+            
+            self.debug_print(f"Created container for {css_class}")
+            return event_box, inner_box
         
         def get_nested_value(self, data: Dict, key_path: str) -> str:
             """Get nested dictionary value using dot notation like 'weather.main'
@@ -99,7 +163,6 @@ class BuiltinWidgets:
             formatted = self.label_format
             
             # Find all {key.path} patterns and replace them
-            import re
             pattern = r'\{([^}]+)\}'
             matches = re.findall(pattern, formatted)
             
@@ -154,22 +217,22 @@ class BuiltinWidgets:
                         data = json.loads(output)
                         self.last_data = data
                         
-                        # Debug: Print the JSON structure (remove this later)
-                        print(f"Debug - JSON keys at root: {list(data.keys()) if isinstance(data, dict) else 'Not a dict'}")
-                        if isinstance(data, dict) and 'current_condition' in data:
-                            print(f"Debug - current_condition type: {type(data['current_condition'])}")
-                            if isinstance(data['current_condition'], list) and len(data['current_condition']) > 0:
-                                print(f"Debug - first current_condition keys: {list(data['current_condition'][0].keys())}")
+                        # Debug JSON structure
+                        if self.debug:
+                            self.debug_print(f"JSON keys at root: {list(data.keys()) if isinstance(data, dict) else 'Not a dict'}")
+                            if isinstance(data, dict) and 'current_condition' in data:
+                                self.debug_print(f"current_condition type: {type(data['current_condition'])}")
                         
                         # Format and display
                         formatted_text = self.format_label(data)
                         self.widget.set_text(formatted_text)
                         
                     except json.JSONDecodeError as e:
-                        error_msg = f"JSON Error: {str(e)}\nFirst 200 chars of output: {output[:200]}"
+                        error_msg = f"JSON Error: {str(e)}"
                         self.widget.set_text(error_msg)
-                        print(f"JSON Parse Error: {e}")
-                        print(f"Raw output: {output[:500]}")  # Debug output
+                        if self.debug:
+                            self.debug_print(f"JSON Parse Error: {e}")
+                            self.debug_print(f"Raw output: {output[:500]}")
                 else:
                     # Plain text mode
                     self.widget.set_text(output)
@@ -177,9 +240,10 @@ class BuiltinWidgets:
             except Exception as e:
                 error_msg = f"Update Error: {str(e)}"
                 self.widget.set_text(error_msg)
-                print(f"Update Error: {e}")  # Debug output
+                if self.debug:
+                    self.debug_print(f"Update Error: {e}")
             
             return True  # Continue the timer
         
         def get_widget(self):
-            return self.widget
+            return self.event_box
