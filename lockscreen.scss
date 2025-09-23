@@ -1,0 +1,116 @@
+/* Lockscreen SCSS Styling with Background Support */
+
+$primary-color: white;
+$shadow-color: rgba(0, 0, 0, 0.7);
+$background-blur: rgba(0, 0, 0, 0.3);
+
+// Clock widget styling
+.clock-widget {
+  // Background container (EventBox)
+  &-background {
+    background-color: transparent; // Default: no background
+    border-radius: 0px;
+    border: 0px solid transparent;
+    
+    // GTK margins (spacing around the widget)
+    margin-top: 0px;
+    margin-bottom: 0px; 
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+  
+  // Padding container (Box inside EventBox)
+  &-padding {
+    // GTK padding (spacing inside the widget)
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px; 
+    padding-right: 0px;
+    
+    // Set minimum size for the container
+    min-width: 0px;
+    min-height: 0px;
+  }
+  
+  // Text styling
+  &-text {
+    font-family: Sans;
+    font-size: 48px;
+    font-weight: bold;
+    color: $primary-color;
+    text-shadow: 2px 2px 4px $shadow-color;
+  }
+}
+
+.date-widget {
+  // Background container (EventBox)
+  &-background {
+    background-color: transparent; // Default: no background
+    border-radius: 0px;
+    border: 0px solid transparent;
+    
+    // GTK margins (spacing around the widget)
+    margin-top: 0px;
+    margin-bottom: 0px; 
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+  
+  // Padding container (Box inside EventBox)
+  &-padding {
+    // GTK padding (spacing inside the widget)
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px; 
+    padding-right: 0px;
+    
+    // Set minimum size for the container
+    min-width: 0px;
+    min-height: 0px;
+  }
+  
+  // Text styling
+  &-text {
+    font-family: Sans;
+    font-size: 20px;
+    font-weight: bold;
+    color: $primary-color;
+    text-shadow: 2px 2px 4px $shadow-color;
+  }
+}
+
+.weather-widget {
+  // Background container (EventBox)
+  &-background {
+    background-color: transparent; // Default: no background
+    border-radius: 0px;
+    border: 0px solid transparent;
+    
+    // GTK margins (spacing around the widget)
+    margin-top: 0px;
+    margin-bottom: 0px; 
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+  
+  // Padding container (Box inside EventBox)
+  &-padding {
+    // GTK padding (spacing inside the widget)
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px; 
+    padding-right: 0px;
+    
+    // Set minimum size for the container
+    min-width: 0px;
+    min-height: 0px;
+  }
+  
+  // Text styling
+  &-text {
+    font-family: Maple Mono NF SemiBold;
+    font-size: 15px;
+    color: rgb(150, 150, 150);
+    text-shadow: 2px 2px 4px $shadow-color;
+  }
+}

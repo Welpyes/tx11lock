@@ -1,0 +1,29 @@
+widgets:
+  clock:
+    type: "builtin.clock"
+    class-name: "clock-widget"  # CSS class name
+    options:
+      label: "%I:%M %p"  # strftime format string
+    position: "center"  # position: north, south, east, west, and combinations
+    offset_y: -300  # offset from the position by pixels. can be negative
+    offset_x: 0  # same as the offset y
+  date:
+    type: "builtin.clock"
+    class-name: "date-widget"
+    options:
+      label: "%A, %B, %d"
+    position: "center"
+    offset_y: -200
+    offset_x: 0
+  weather:
+    type: "builtin.custom"
+    class-name: "weather-widget"
+    position: "southwest"
+    offset_y: -10
+    offset_x: 10
+    exec_options:
+      run_cmd: "cat ~/weather.json"
+      run_interval: 300000
+      return_format: "json"
+    options:
+      label: "{nearest_area.areaName.value}, {nearest_area.country.value}\\n󰼳 {current_condition.weatherDesc.value}\\n{current_condition.temp_C}\\n{current_condition.humidity}"

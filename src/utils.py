@@ -14,12 +14,11 @@ def create_example_files():
     offset_y: 0  # offset from the position by pixels. can be negative
     offset_x: 0  # same as the offset y
 
-  # Example weather widget (uncomment and add your location)
+  # Single command example (weather only)
   # weather:
   #   type: "builtin.custom"
   #   class-name: "weather-widget"
   #   options:
-  #     # Arrays automatically use first element - no need for .0!
   #     label: "{current_condition.temp_C}°C\\n{current_condition.weatherDesc.value}"
   #   exec_options:
   #     run_cmd: "curl -s 'https://wttr.in/dumaguete?format=j2'"
@@ -28,6 +27,28 @@ def create_example_files():
   #   position: "northeast"
   #   offset_x: -20
   #   offset_y: 20
+
+  # Multiple commands example (weather + system info)
+  # system_info:
+  #   type: "builtin.custom"
+  #   class-name: "info-widget"
+  #   options:
+  #     label: "Weather: {weather.current_condition.temp_C}°C\\nUptime: {system}\\nDisk: {disk}"
+  #   exec_options:
+  #     commands:
+  #       weather:
+  #         run_cmd: "curl -s 'https://wttr.in/dumaguete?format=j2'"
+  #         return_format: "json"
+  #       system:
+  #         run_cmd: "uptime -p | sed 's/up //'"
+  #         return_format: "text"
+  #       disk:
+  #         run_cmd: "df -h / | awk 'NR==2{print $5}'"
+  #         return_format: "text"
+  #     run_interval: 300000
+  #   position: "southwest"
+  #   offset_x: 20
+  #   offset_y: -20
 """
     
     # Example SCSS with background support

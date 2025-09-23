@@ -75,9 +75,20 @@ class BuiltinWidgets:
             exec_options = config.get('exec_options', {})
             
             self.label_format = options.get('label', '')
-            self.run_cmd = exec_options.get('run_cmd', '')
+            
+            # Support both single command and multiple commands
+            if 'commands' in exec_options:
+                # Multiple commands mode
+                self.commands = exec_options.get('commands', {})
+                self.run_cmd = None  # Not used in multi-command mode
+                self.return_format = 'json'  # Always JSON for multi-command
+            else:
+                # Single command mode (backward compatibility)
+                self.run_cmd = exec_options.get('run_cmd', '')
+                self.return_format = exec_options.get('return_format', 'text')
+                self.commands = None
+            
             self.run_interval = exec_options.get('run_interval', exec_options.get('interval', 300000))
-            self.return_format = exec_options.get('return_format', 'text')
             
             self.debug_print(f"Creating container for {css_class}")
             # Create container with background support
@@ -181,29 +192,81 @@ class BuiltinWidgets:
             return formatted
         
         def execute_command(self) -> str:
-            """Execute the command and return output"""
+            """Execute the command(s) and return output"""
             try:
-                if not self.run_cmd:
-                    return "No command specified"
-                
-                # Execute command
-                result = subprocess.run(
-                    self.run_cmd,
-                    shell=True,
-                    capture_output=True,
-                    text=True,
-                    timeout=30  # 30 second timeout
-                )
-                
-                if result.returncode != 0:
-                    return f"Command failed: {result.stderr}"
-                
-                return result.stdout.strip()
-                
-            except subprocess.TimeoutExpired:
-                return "Command timeout"
+                if self.commands:
+                    # Multiple commands mode
+                    return self.execute_multiple_commands()
+                else:
+                    # Single command mode
+                    return self.execute_single_command()
             except Exception as e:
                 return f"Command error: {str(e)}"
+        
+        def execute_single_command(self) -> str:
+            """Execute a single command"""
+            if not self.run_cmd:
+                return "No command specified"
+            
+            result = subprocess.run(
+                self.run_cmd,
+                shell=True,
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+            
+            if result.returncode != 0:
+                return f"Command failed: {result.stderr}"
+            
+            return result.stdout.strip()
+        
+        def execute_multiple_commands(self) -> str:
+            """Execute multiple commands and combine results as JSON"""
+            combined_results = {}
+            
+            for cmd_name, cmd_config in self.commands.items():
+                try:
+                    run_cmd = cmd_config.get('run_cmd', '')
+                    return_format = cmd_config.get('return_format', 'text')
+                    
+                    if not run_cmd:
+                        combined_results[cmd_name] = f"No command specified for {cmd_name}"
+                        continue
+                    
+                    self.debug_print(f"Executing command '{cmd_name}': {run_cmd}")
+                    
+                    result = subprocess.run(
+                        run_cmd,
+                        shell=True,
+                        capture_output=True,
+                        text=True,
+                        timeout=30
+                    )
+                    
+                    if result.returncode != 0:
+                        combined_results[cmd_name] = f"Command failed: {result.stderr}"
+                        continue
+                    
+                    output = result.stdout.strip()
+                    
+                    # Parse based on return format
+                    if return_format == 'json':
+                        try:
+                            parsed_data = json.loads(output)
+                            combined_results[cmd_name] = parsed_data
+                        except json.JSONDecodeError:
+                            combined_results[cmd_name] = {"raw": output, "error": "Invalid JSON"}
+                    else:
+                        # Text format
+                        combined_results[cmd_name] = output
+                
+                except subprocess.TimeoutExpired:
+                    combined_results[cmd_name] = f"Command timeout for {cmd_name}"
+                except Exception as e:
+                    combined_results[cmd_name] = f"Error in {cmd_name}: {str(e)}"
+            
+            return json.dumps(combined_results)
         
         def update_data(self):
             """Update the data by executing command"""
