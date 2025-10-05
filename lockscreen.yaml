@@ -3,17 +3,17 @@ widgets:
     type: "builtin.clock"
     class-name: "clock-widget"  # CSS class name
     options:
-      label: "%I:%M %p"  # strftime format string
+      label: "%I"  # strftime format string
     position: "center"  # position: north, south, east, west, and combinations
-    offset_y: -300  # offset from the position by pixels. can be negative
+    offset_y: -200 # offset from the position by pixels. can be negative
     offset_x: 0  # same as the offset y
   date:
     type: "builtin.clock"
     class-name: "date-widget"
     options:
-      label: "%A, %B, %d"
+      label: "%M"
     position: "center"
-    offset_y: -200
+    offset_y: 150
     offset_x: 0
   weather:
     type: "builtin.custom"
@@ -29,9 +29,9 @@ widgets:
     exec_options:
       commands:
         weather-temp:
-          run_cmd: "cat ~/weather.txt"
+          run_cmd: "bash ~/.config/eww/scripts/weather.sh"
           return_format: "text"
         weather-else:
-          run_cmd: "cat ~/weather.json"
+          run_cmd: "curl wttr.in/dumaguete?format=j2"
           return_format: "json"
       run_interval: 300000
