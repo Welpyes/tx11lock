@@ -1,0 +1,137 @@
+{
+    "current_condition": [
+        {
+            "FeelsLikeC": "3",
+            "FeelsLikeF": "38",
+            "cloudcover": "100",
+            "humidity": "93",
+            "localObsDateTime": "2026-01-21 01:36 AM",
+            "observation_time": "01:36 AM",
+            "precipInches": "0.0",
+            "precipMM": "0.4",
+            "pressure": "998",
+            "pressureInches": "29",
+            "temp_C": "7",
+            "temp_F": "45",
+            "uvIndex": "0",
+            "visibility": "10",
+            "visibilityMiles": "6",
+            "weatherCode": "122",
+            "weatherDesc": [
+                {
+                    "value": "Overcast"
+                }
+            ],
+            "weatherIconUrl": [
+                {
+                    "value": ""
+                }
+            ],
+            "winddir16Point": "SSW",
+            "winddirDegree": "198",
+            "windspeedKmph": "24",
+            "windspeedMiles": "15"
+        }
+    ],
+    "nearest_area": [
+        {
+            "areaName": [
+                {
+                    "value": "London"
+                }
+            ],
+            "country": [
+                {
+                    "value": "United Kingdom"
+                }
+            ],
+            "latitude": "51.517",
+            "longitude": "-0.106",
+            "population": "7421228",
+            "region": [
+                {
+                    "value": "City of London Greater London"
+                }
+            ],
+            "weatherUrl": [
+                {
+                    "value": ""
+                }
+            ]
+        }
+    ],
+    "request": [
+        {
+            "query": "Lat 51.51 and Lon -0.13",
+            "type": "LatLon"
+        }
+    ],
+    "weather": [
+        {
+            "astronomy": [
+                {
+                    "moon_illumination": "5",
+                    "moon_phase": "Waxing Crescent",
+                    "moonrise": "09:13 AM",
+                    "moonset": "07:43 PM",
+                    "sunrise": "07:54 AM",
+                    "sunset": "04:30 PM"
+                }
+            ],
+            "avgtempC": "8",
+            "avgtempF": "47",
+            "date": "2026-01-21",
+            "maxtempC": "9",
+            "maxtempF": "48",
+            "mintempC": "6",
+            "mintempF": "44",
+            "sunHour": "6.8",
+            "totalSnow_cm": "0.0",
+            "uvIndex": "0"
+        },
+        {
+            "astronomy": [
+                {
+                    "moon_illumination": "10",
+                    "moon_phase": "Waxing Crescent",
+                    "moonrise": "09:25 AM",
+                    "moonset": "09:02 PM",
+                    "sunrise": "07:53 AM",
+                    "sunset": "04:32 PM"
+                }
+            ],
+            "avgtempC": "8",
+            "avgtempF": "47",
+            "date": "2026-01-22",
+            "maxtempC": "9",
+            "maxtempF": "49",
+            "mintempC": "6",
+            "mintempF": "42",
+            "sunHour": "6.8",
+            "totalSnow_cm": "0.0",
+            "uvIndex": "0"
+        },
+        {
+            "astronomy": [
+                {
+                    "moon_illumination": "18",
+                    "moon_phase": "Waxing Crescent",
+                    "moonrise": "09:37 AM",
+                    "moonset": "10:22 PM",
+                    "sunrise": "07:51 AM",
+                    "sunset": "04:34 PM"
+                }
+            ],
+            "avgtempC": "6",
+            "avgtempF": "43",
+            "date": "2026-01-23",
+            "maxtempC": "8",
+            "maxtempF": "46",
+            "mintempC": "5",
+            "mintempF": "41",
+            "sunHour": "6.8",
+            "totalSnow_cm": "0.0",
+            "uvIndex": "0"
+        }
+    ]
+}

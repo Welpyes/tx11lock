@@ -1,7 +1,6 @@
 import os
 
 def create_example_files():
-    """Create example configuration and SCSS files"""
     
     # Example YAML configuration
     config_yaml = """widgets:
@@ -19,7 +18,7 @@ def create_example_files():
   #   type: "builtin.custom"
   #   class-name: "weather-widget"
   #   options:
-  #     label: "{current_condition.temp_C}°C\\n{current_condition.weatherDesc.value}"
+  #     label: "{current_condition.temp_C}°C\n{current_condition.weatherDesc.value}"
   #   exec_options:
   #     run_cmd: "curl -s 'https://wttr.in/dumaguete?format=j2'"
   #     run_interval: 300000  # 5 minutes in milliseconds  
@@ -33,14 +32,14 @@ def create_example_files():
   #   type: "builtin.custom"
   #   class-name: "info-widget"
   #   options:
-  #     label: "Weather: {weather.current_condition.temp_C}°C\\nUptime: {system}\\nDisk: {disk}"
+  #     label: "Weather: {weather.current_condition.temp_C}°C\nUptime: {system}\nDisk: {disk}"
   #   exec_options:
   #     commands:
   #       weather:
   #         run_cmd: "curl -s 'https://wttr.in/dumaguete?format=j2'"
   #         return_format: "json"
   #       system:
-  #         run_cmd: "uptime -p | sed 's/up //'"
+  #         run_cmd: "uptime -p | sed 's/up //'
   #         return_format: "text"
   #       disk:
   #         run_cmd: "df -h / | awk 'NR==2{print $5}'"

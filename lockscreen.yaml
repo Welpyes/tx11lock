@@ -1,3 +1,10 @@
+background:
+  screenshot: false # true for screenshot, false for custom image
+  path: "~/Pictures/gowall/sui-megane.jpg"           # Absolute or relative path to image file
+  blur: true         # Apply blur effect
+  blur_radius: 20    # Blur intensity (sigma)
+  darken: 0.5        # Darken intensity (0.0 to 1.0)
+
 widgets:
   clock:
     type: "builtin.clock"
